@@ -7,6 +7,7 @@ interface Todo {
     task: string;
     dueDate?: Date | null; // Allow both undefined and null
     alarmTime?: { hours: number; minutes: number }; // Store alarm time as an object
+    audioSrc?: string; // Store the source of the audio
 }
 
 const TodoApp = () => {
@@ -15,7 +16,7 @@ const TodoApp = () => {
     const [dueDate, setDueDate] = useState<Date | null>(null);
     const [alarmHours, setAlarmHours] = useState<number | string>(""); // Start empty
     const [alarmMinutes, setAlarmMinutes] = useState<number | string>(""); // Start empty
-    const alarmSound = new Audio("/alarm.mp3"); // Load your alarm sound file
+    const [audioFile, setAudioFile] = useState<File | null>(null); // For selected audio file
 
     useEffect(() => {
         const savedTodos = localStorage.getItem("todos");
@@ -46,12 +47,13 @@ const TodoApp = () => {
             minutes: Number(alarmMinutes)
         };
 
-        const newTask: Todo = { id: Date.now(), task, dueDate, alarmTime };
+        const newTask: Todo = { id: Date.now(), task, dueDate, alarmTime, audioSrc: audioFile ? URL.createObjectURL(audioFile) : undefined };
         setTodos([...todos, newTask]);
         setTask("");
         setDueDate(null);
         setAlarmHours(""); // Reset to empty
         setAlarmMinutes(""); // Reset to empty
+        setAudioFile(null); // Reset audio file
 
         if (dueDate) {
             const alarmDate = new Date(dueDate);
@@ -61,7 +63,7 @@ const TodoApp = () => {
             const timeToReminder = alarmDate.getTime() - new Date().getTime();
             if (timeToReminder > 0) {
                 setTimeout(() => {
-                    showNotification(newTask.task);
+                    showNotification(newTask.task, newTask.audioSrc);
                 }, timeToReminder);
             }
         }
@@ -71,17 +73,20 @@ const TodoApp = () => {
         setTodos(todos.filter(todo => todo.id !== id));
     };
 
-    const showNotification = (task: string) => {
+    const showNotification = (task: string, audioSrc?: string) => {
         if (Notification.permission === "granted") {
             new Notification("Task Reminder", {
                 body: `Reminder for task: ${task}`,
                 icon: "/path-to-icon/icon.png", 
             });
 
-            // Play the alarm sound
-            alarmSound.play().catch((error: Error) => { // Specify the type of error
-                console.error("Error playing sound:", error);
-            });
+            // Play the alarm sound if an audio source is provided
+            if (audioSrc) {
+                const alarmSound = new Audio(audioSrc);
+                alarmSound.play().catch(error => {
+                    console.error("Error playing sound:", error);
+                });
+            }
         }
     };
 
@@ -97,7 +102,7 @@ const TodoApp = () => {
                 <DatePicker
                     selected={dueDate}
                     onChange={(date) => setDueDate(date)}
-                    dateFormat="Pp" // Show date and time
+                    dateFormat="Pp"
                     placeholderText="Set due date" 
                 />
                 <div>
@@ -120,6 +125,19 @@ const TodoApp = () => {
                         min="0"
                         max="59"
                         placeholder="MM"
+                    />
+                </div>
+                <div>
+                    <label htmlFor="audio-upload">Select Alarm Sound: </label>
+                    <input
+                        type="file"
+                        id="audio-upload"
+                        accept="audio/*"
+                        onChange={(e) => {
+                            if (e.target.files && e.target.files[0]) {
+                                setAudioFile(e.target.files[0]); // Set the selected audio file
+                            }
+                        }}
                     />
                 </div>
                 <button

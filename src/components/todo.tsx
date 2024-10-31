@@ -5,7 +5,7 @@ import "react-datepicker/dist/react-datepicker.css";
 interface Todo {
     id: number;
     task: string;
-    dueDate: Date | null; // Change here: remove undefined from type
+    dueDate: Date | null; // Ensure dueDate is correctly typed
     audioSrc?: string;
 }
 
@@ -131,7 +131,10 @@ const TodoApp = () => {
                         }
                     }}
                 />
-                <button onClick={addOrUpdateTask} disabled={!dueDate || (editingTaskId === null && !task.trim())}>
+                <button 
+                    onClick={addOrUpdateTask} 
+                    disabled={!task.trim() || !dueDate} // Enable button if task is not empty and dueDate is set
+                >
                     {editingTaskId !== null ? "Update Task" : "Add Task"}
                 </button>
             </div>

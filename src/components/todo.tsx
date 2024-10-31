@@ -118,7 +118,7 @@ const TodoApp = () => {
                         }
                     }}
                 />
-                <button onClick={addTask} disabled={!task || !dueDate}>
+                <button onClick={addTask} disabled={!task.trim() || !dueDate}>
                     Add Task
                 </button>
             </div>

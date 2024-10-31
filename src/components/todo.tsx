@@ -79,7 +79,7 @@ const TodoApp = () => {
             });
 
             // Play the alarm sound
-            alarmSound.play().catch(error => {
+            alarmSound.play().catch((error: Error) => { // Specify the type of error
                 console.error("Error playing sound:", error);
             });
         }
@@ -97,7 +97,7 @@ const TodoApp = () => {
                 <DatePicker
                     selected={dueDate}
                     onChange={(date) => setDueDate(date)}
-                    dateFormat="Pp"
+                    dateFormat="Pp" // Show date and time
                     placeholderText="Set due date" 
                 />
                 <div>

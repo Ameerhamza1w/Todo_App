@@ -1,7 +1,17 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
+  "extends": "./tsconfig.base.json",
+  "compilerOptions": {
+    "outDir": "./out-tsc/app",
+    "types": [],
+    "lib": ["es2018", "dom"], // Add 'dom' here
+    // other options...
+  },
+  "files": [
+    "src/main.ts",
+    "src/polyfills.ts"
+  ],
+  "include": [
+    "src/**/*.d.ts",
+    "src/**/*.ts"
   ]
 }

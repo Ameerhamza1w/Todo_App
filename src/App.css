@@ -27,12 +27,12 @@ body {
   width: 100%;
   max-width: 400px;
   padding: 20px;
-  background-color: #e9710f57; /* White background for clean look */
-  color: #333333; /* Dark text for readability */
+  background-color: #e9710f57; /* Soft orange background */
+  color: #333333;
   border-radius: 12px;
-  border: 2px solid transparent; /* Transparent border to set up gradient border effect */
+  border: 2px solid transparent;
   background-clip: padding-box;
-  box-shadow: 0px 10px 20px rgba(235, 0, 0, 0.15); /* Soft shadow for depth */
+  box-shadow: 0px 10px 20px rgba(235, 0, 0, 0.15);
   position: relative;
 }
 
@@ -44,51 +44,67 @@ body {
   right: -2px;
   bottom: -2px;
   border-radius: 12px;
-  background: linear-gradient(45deg, #f86d6d, #FFD93D, #6BCB77, #4D96FF); /* Vibrant gradient border */
+  background: linear-gradient(45deg, #f86d6d, #FFD93D, #6BCB77, #4D96FF);
   z-index: -1;
-  box-shadow: 0 0 10px rgba(255, 107, 107, 0.4), 0 0 20px rgba(255, 217, 61, 0.4); /* Glow effect */
+  box-shadow: 0 0 10px rgba(255, 107, 107, 0.4), 0 0 20px rgba(255, 217, 61, 0.4);
 }
 
 .input-section {
   display: flex;
-  justify-content: center;
+  flex-direction: column; /* Stack vertically */
+  align-items: center;
   margin-bottom: 20px;
+  gap: 10px; /* Add space between input and date picker */
 }
 
-input {
+input[type="text"] {
   padding: 10px;
-  margin-right: 5px;
-  width: 70%;
+  width: 100%;
   border: 1px solid #380c0c;
   border-radius: 6px;
-  background-color: #e0dcdc; /* Light grey for soft contrast */
+  background-color: #e0dcdc;
   color: #333;
+}
+
+.react-datepicker-wrapper {
+  width: 100%;
+}
+
+.react-datepicker__input-container input {
+  width: 100%;
+  padding: 10px;
+  border: 1px solid #380c0c;
+  border-radius: 6px;
+  background-color: #e0dcdc;
+  color: #333;
+  font-size: 1em;
+  text-align: center;
 }
 
 button {
   padding: 10px;
-  background-color: #f1f1f1; /* Light background */
-  color: #666; /* Soft text color */
+  background-color: #f1f1f1;
+  color: #666;
   border: none;
   border-radius: 6px;
   cursor: not-allowed;
 }
 
 button:disabled {
-  background-color: #bd6603; /* Soft orange for a gentle touch */
+  background-color: #bd6603;
   color: #ffffff;
   cursor: not-allowed;
 }
 
 button.active {
-  background-color: #4D96FF; /* Bright blue for action button */
+  background-color: #4D96FF;
   color: #FFFFFF;
   cursor: pointer;
-  box-shadow: 0px 4px 8px rgba(77, 150, 255, 0.5); /* Light blue shadow for focus */
+  box-shadow: 0px 4px 8px rgba(77, 150, 255, 0.5);
 }
 
 button.active:hover {
-  background-color: #0066FF; /* Darker shade for hover */
+  background-color: #0066FF;
 }
 
 ul {
@@ -99,7 +115,7 @@ ul {
 li {
   padding: 12px;
   margin-bottom: 10px;
-  background-color: #FAFAFA; /* Light background for list items */
+  background-color: #FAFAFA;
   border: 1px solid #ddd;
   border-radius: 6px;
   display: flex;
@@ -110,7 +126,7 @@ li {
 }
 
 li button {
-  background-color: #fa3838; /* Bright red for delete button */
+  background-color: #fa3838;
   padding: 5px;
   color: #FFF;
   border: none;
@@ -119,5 +135,5 @@ li button {
 }
 
 li button:hover {
-  background-color: #6d0101; /* Slightly darker red for hover */
+  background-color: #6d0101;
 }

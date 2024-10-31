@@ -5,10 +5,9 @@ interface Todo {
   task: string;
 }
 
-// Load initial todos from localStorage, if available
 const getInitialTodos = (): Todo[] => {
   const savedTodos = localStorage.getItem("todos");
-  console.log("Loaded todos from localStorage:", savedTodos); // Debugging line
+  console.log("Loaded todos from localStorage:", savedTodos); 
   return savedTodos ? JSON.parse(savedTodos) : [];
 };
 
@@ -16,9 +15,8 @@ const TodoApp = () => {
   const [task, setTask] = useState<string>("");
   const [todos, setTodos] = useState<Todo[]>(getInitialTodos);
 
-  // Update localStorage whenever todos array changes
   useEffect(() => {
-    console.log("Updating localStorage with todos:", todos); // Debugging line
+    console.log("Updating localStorage with todos:", todos); 
     localStorage.setItem("todos", JSON.stringify(todos));
   }, [todos]);
 

@@ -13,8 +13,8 @@ const TodoApp = () => {
     const [task, setTask] = useState<string>("");
     const [todos, setTodos] = useState<Todo[]>([]);
     const [dueDate, setDueDate] = useState<Date | null>(null);
-    const [alarmHours, setAlarmHours] = useState<number>(0);
-    const [alarmMinutes, setAlarmMinutes] = useState<number>(0);
+    const [alarmHours, setAlarmHours] = useState<number | string>(""); // Start empty
+    const [alarmMinutes, setAlarmMinutes] = useState<number | string>(""); // Start empty
     const alarmSound = new Audio("/alarm.mp3"); // Load your alarm sound file
 
     useEffect(() => {
@@ -23,8 +23,13 @@ const TodoApp = () => {
             setTodos(JSON.parse(savedTodos));
         }
 
+        // Request notification permission
         if ("Notification" in window) {
-            Notification.requestPermission();
+            Notification.requestPermission().then(permission => {
+                if (permission !== "granted") {
+                    console.log("Notification permission denied");
+                }
+            });
         }
     }, []);
 
@@ -34,20 +39,24 @@ const TodoApp = () => {
 
     const addTask = () => {
         if (task.trim() === "") return;
-        
-        const alarmTime = { hours: alarmHours, minutes: alarmMinutes };
+
+        // Convert alarm hours and minutes to numbers
+        const alarmTime = {
+            hours: Number(alarmHours),
+            minutes: Number(alarmMinutes)
+        };
 
         const newTask: Todo = { id: Date.now(), task, dueDate, alarmTime };
         setTodos([...todos, newTask]);
         setTask("");
         setDueDate(null);
-        setAlarmHours(0);
-        setAlarmMinutes(0); // Reset alarm time after adding a task
+        setAlarmHours(""); // Reset to empty
+        setAlarmMinutes(""); // Reset to empty
 
         if (dueDate) {
             const alarmDate = new Date(dueDate);
-            alarmDate.setHours(alarmHours);
-            alarmDate.setMinutes(alarmMinutes);
+            alarmDate.setHours(alarmTime.hours);
+            alarmDate.setMinutes(alarmTime.minutes);
 
             const timeToReminder = alarmDate.getTime() - new Date().getTime();
             if (timeToReminder > 0) {
@@ -90,7 +99,6 @@ const TodoApp = () => {
                     onChange={(date) => setDueDate(date)}
                     dateFormat="Pp"
                     placeholderText="Set due date" 
-                    showTimeSelect={false} // Disable time selection
                 />
                 <div>
                     <label htmlFor="alarm-hours">Set Time: </label>
@@ -98,7 +106,7 @@ const TodoApp = () => {
                         type="number"
                         id="alarm-hours"
                         value={alarmHours}
-                        onChange={(e) => setAlarmHours(Number(e.target.value))}
+                        onChange={(e) => setAlarmHours(e.target.value)}
                         min="0"
                         max="23"
                         placeholder="HH"
@@ -108,7 +116,7 @@ const TodoApp = () => {
                         type="number"
                         id="alarm-minutes"
                         value={alarmMinutes}
-                        onChange={(e) => setAlarmMinutes(Number(e.target.value))}
+                        onChange={(e) => setAlarmMinutes(e.target.value)}
                         min="0"
                         max="59"
                         placeholder="MM"
@@ -116,7 +124,7 @@ const TodoApp = () => {
                 </div>
                 <button
                     onClick={addTask}
-                    disabled={!task}
+                    disabled={!task || (!alarmHours && !alarmMinutes)} // Ensure time is set
                     className={task ? "active" : ""}
                 >
                     Add Task

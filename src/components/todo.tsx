@@ -56,6 +56,8 @@ const TodoApp = () => {
             setTimeout(() => {
                 showNotification(newTask.task, newTask.audioSrc);
             }, timeToReminder);
+        } else {
+            alert("Please select a future date and time for the reminder.");
         }
     };
 
@@ -65,7 +67,7 @@ const TodoApp = () => {
 
     const showNotification = (task: string, audioSrc?: string) => {
         if (Notification.permission === "granted") {
-            new Notification("Task Reminder", {
+            const notification = new Notification("Task Reminder", {
                 body: `Reminder for task: ${task}`,
                 icon: "/path-to-icon/icon.png",
             });
@@ -77,6 +79,13 @@ const TodoApp = () => {
                     console.error("Error playing sound:", error);
                 });
             }
+
+            notification.onclick = () => {
+                // Optionally, handle notification click event
+                console.log("Notification clicked!");
+            };
+        } else {
+            alert("Notification permission not granted.");
         }
     };
 
@@ -97,6 +106,7 @@ const TodoApp = () => {
                         showTimeSelect
                         dateFormat="Pp" // Show both date and time
                         placeholderText="Set due date and time"
+                        className="date-picker"
                     />
                 </div>
                 <div>

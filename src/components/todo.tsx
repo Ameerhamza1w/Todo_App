@@ -108,7 +108,7 @@ const TodoApp = () => {
                 <DatePicker
                     selected={dueDate}
                     onChange={(date) => setDueDate(date)}
-                    dateFormat="Pp"
+                    dateFormat="P" // Format changed to only show the date
                     placeholderText="Set due date"
                 />
                 <div>
@@ -158,7 +158,8 @@ const TodoApp = () => {
             <ul>
                 {todos.map((todo) => (
                     <li key={todo.id}>
-                        {todo.task} {/* Removed alarm time display */}
+                        {todo.task} 
+                        {todo.dueDate ? new Date(todo.dueDate).toLocaleDateString() : ""} {/* Display only the date */}
                         <button onClick={() => deleteTask(todo.id)}>Delete</button>
                     </li>
                 ))}

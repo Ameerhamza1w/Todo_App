@@ -133,9 +133,18 @@ const TodoApp = () => {
                 />
                 <button 
                     onClick={addOrUpdateTask} 
-                    disabled={!task.trim() || !dueDate} // Enable button if task is not empty and dueDate is set
+                    style={{
+                        backgroundColor: task.trim() ? "#4CAF50" : "#ccc", // Change color based on task input
+                        color: "white",
+                        padding: "10px 20px",
+                        border: "none",
+                        borderRadius: "5px",
+                        cursor: task.trim() ? "pointer" : "not-allowed", // Change cursor based on task input
+                        opacity: task.trim() ? 1 : 0.6 // Adjust opacity for visual feedback
+                    }}
+                    disabled={!task.trim()} // Keep the button enabled but style it accordingly
                 >
-                    {editingTaskId !== null ? "Update Task" : "Add Task"}
+                    Add Task
                 </button>
             </div>
             <ul>

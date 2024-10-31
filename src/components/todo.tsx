@@ -47,7 +47,13 @@ const TodoApp = () => {
             minutes: Number(alarmMinutes)
         };
 
-        const newTask: Todo = { id: Date.now(), task, dueDate, alarmTime, audioSrc: audioFile ? URL.createObjectURL(audioFile) : undefined };
+        const newTask: Todo = {
+            id: Date.now(),
+            task,
+            dueDate,
+            alarmTime,
+            audioSrc: audioFile ? URL.createObjectURL(audioFile) : undefined
+        };
         setTodos([...todos, newTask]);
         setTask("");
         setDueDate(null);
@@ -77,7 +83,7 @@ const TodoApp = () => {
         if (Notification.permission === "granted") {
             new Notification("Task Reminder", {
                 body: `Reminder for task: ${task}`,
-                icon: "/path-to-icon/icon.png", 
+                icon: "/path-to-icon/icon.png",
             });
 
             // Play the alarm sound if an audio source is provided
@@ -103,7 +109,7 @@ const TodoApp = () => {
                     selected={dueDate}
                     onChange={(date) => setDueDate(date)}
                     dateFormat="Pp"
-                    placeholderText="Set due date" 
+                    placeholderText="Set due date"
                 />
                 <div>
                     <label htmlFor="alarm-hours">Set Time: </label>
@@ -152,8 +158,7 @@ const TodoApp = () => {
             <ul>
                 {todos.map((todo) => (
                     <li key={todo.id}>
-                        {todo.task} - {todo.dueDate ? new Date(todo.dueDate).toLocaleString() : ""}
-                        {todo.alarmTime ? ` (Alarm at ${todo.alarmTime.hours}:${todo.alarmTime.minutes < 10 ? '0' : ''}${todo.alarmTime.minutes})` : ""}
+                        {todo.task} {/* Removed alarm time display */}
                         <button onClick={() => deleteTask(todo.id)}>Delete</button>
                     </li>
                 ))}

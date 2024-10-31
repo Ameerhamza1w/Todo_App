@@ -5,15 +5,15 @@ import "react-datepicker/dist/react-datepicker.css";
 interface Todo {
     id: number;
     task: string;
-    dueDate?: Date | null; // Allow both undefined and null
-    audioSrc?: string; // Store the source of the audio
+    dueDate?: Date | null;
+    audioSrc?: string;
 }
 
 const TodoApp = () => {
     const [task, setTask] = useState<string>("");
     const [todos, setTodos] = useState<Todo[]>([]);
     const [dueDate, setDueDate] = useState<Date | null>(null);
-    const [audioFile, setAudioFile] = useState<File | null>(null); // For selected audio file
+    const [audioFile, setAudioFile] = useState<File | null>(null);
 
     useEffect(() => {
         const savedTodos = localStorage.getItem("todos");
@@ -23,9 +23,9 @@ const TodoApp = () => {
 
         // Request notification permission
         if ("Notification" in window) {
-            Notification.requestPermission().then(permission => {
+            Notification.requestPermission().then((permission) => {
                 if (permission !== "granted") {
-                    console.log("Notification permission denied");
+                    console.error("Notification permission denied");
                 }
             });
         }
@@ -36,22 +36,22 @@ const TodoApp = () => {
     }, [todos]);
 
     const addTask = () => {
-        if (task.trim() === "" || !dueDate) return; // Ensure a task and date are set
+        if (!task || !dueDate) return; // Ensure task and due date are set
 
         const newTask: Todo = {
             id: Date.now(),
             task,
             dueDate,
-            audioSrc: audioFile ? URL.createObjectURL(audioFile) : undefined
+            audioSrc: audioFile ? URL.createObjectURL(audioFile) : undefined,
         };
+
         setTodos([...todos, newTask]);
         setTask("");
         setDueDate(null);
         setAudioFile(null); // Reset audio file
 
-        // Set notification for the due date and time
         const alarmDate = new Date(dueDate);
-        const timeToReminder = alarmDate.getTime() - new Date().getTime();
+        const timeToReminder = alarmDate.getTime() - Date.now();
         if (timeToReminder > 0) {
             setTimeout(() => {
                 showNotification(newTask.task, newTask.audioSrc);
@@ -61,10 +61,6 @@ const TodoApp = () => {
         }
     };
 
-    const deleteTask = (id: number) => {
-        setTodos(todos.filter(todo => todo.id !== id));
-    };
-
     const showNotification = (task: string, audioSrc?: string) => {
         if (Notification.permission === "granted") {
             const notification = new Notification("Task Reminder", {
@@ -72,20 +68,25 @@ const TodoApp = () => {
                 icon: "/path-to-icon/icon.png",
             });
 
-            // Play the alarm sound if an audio source is provided
-            if (audioSrc) {
-                const alarmSound = new Audio(audioSrc);
-                alarmSound.play().catch(error => {
-                    console.error("Error playing sound:", error);
-                });
-            }
-
             notification.onclick = () => {
-                // Optionally, handle notification click event
+                // Optionally handle notification click
                 console.log("Notification clicked!");
             };
+
+            // Play the alarm sound
+            playAlarmSound(audioSrc);
         } else {
-            alert("Notification permission not granted.");
+            alert("Notification permission not granted. Playing sound only.");
+            playAlarmSound(audioSrc); // Play sound even if notifications are denied
+        }
+    };
+
+    const playAlarmSound = (audioSrc?: string) => {
+        if (audioSrc) {
+            const alarmSound = new Audio(audioSrc);
+            alarmSound.play().catch((error) => {
+                console.error("Error playing sound:", error);
+            });
         }
     };
 
@@ -98,45 +99,30 @@ const TodoApp = () => {
                     onChange={(e) => setTask(e.target.value)}
                     placeholder="Enter a task"
                 />
-                <div>
-                    <label htmlFor="date-time">Set Due Date and Time: </label>
-                    <DatePicker
-                        selected={dueDate}
-                        onChange={(date) => setDueDate(date)}
-                        showTimeSelect
-                        dateFormat="Pp" // Show both date and time
-                        placeholderText="Set due date and time"
-                        className="date-picker"
-                    />
-                </div>
-                <div>
-                    <label htmlFor="audio-upload">Select Alarm Sound: </label>
-                    <input
-                        type="file"
-                        id="audio-upload"
-                        accept="audio/*"
-                        onChange={(e) => {
-                            if (e.target.files && e.target.files[0]) {
-                                setAudioFile(e.target.files[0]); // Set the selected audio file
-                            }
-                        }}
-                    />
-                </div>
-                <button
-                    onClick={addTask}
-                    disabled={!task || !dueDate} // Ensure a task and date are set
-                    className={task ? "active" : ""}
-                >
+                <DatePicker
+                    selected={dueDate}
+                    onChange={(date) => setDueDate(date)}
+                    showTimeSelect
+                    dateFormat="Pp"
+                    placeholderText="Set due date and time"
+                />
+                <input
+                    type="file"
+                    accept="audio/*"
+                    onChange={(e) => {
+                        if (e.target.files && e.target.files[0]) {
+                            setAudioFile(e.target.files[0]);
+                        }
+                    }}
+                />
+                <button onClick={addTask} disabled={!task || !dueDate}>
                     Add Task
                 </button>
             </div>
-
             <ul>
                 {todos.map((todo) => (
                     <li key={todo.id}>
-                        {todo.task} 
-                        {todo.dueDate ? new Date(todo.dueDate).toLocaleString() : ""} {/* Display date and time */}
-                        <button onClick={() => deleteTask(todo.id)}>Delete</button>
+                        {todo.task} - {todo.dueDate?.toLocaleString()}
                     </li>
                 ))}
             </ul>

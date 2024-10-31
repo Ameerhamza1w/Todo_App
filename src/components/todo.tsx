@@ -6,7 +6,6 @@ interface Todo {
     id: number;
     task: string;
     dueDate?: Date | null; // Allow both undefined and null
-    alarmTime?: { hours: number; minutes: number }; // Store alarm time as an object
     audioSrc?: string; // Store the source of the audio
 }
 
@@ -14,8 +13,6 @@ const TodoApp = () => {
     const [task, setTask] = useState<string>("");
     const [todos, setTodos] = useState<Todo[]>([]);
     const [dueDate, setDueDate] = useState<Date | null>(null);
-    const [alarmHours, setAlarmHours] = useState<number | string>(""); // Start empty
-    const [alarmMinutes, setAlarmMinutes] = useState<number | string>(""); // Start empty
     const [audioFile, setAudioFile] = useState<File | null>(null); // For selected audio file
 
     useEffect(() => {
@@ -39,39 +36,26 @@ const TodoApp = () => {
     }, [todos]);
 
     const addTask = () => {
-        if (task.trim() === "") return;
-
-        // Convert alarm hours and minutes to numbers
-        const alarmTime = {
-            hours: Number(alarmHours),
-            minutes: Number(alarmMinutes)
-        };
+        if (task.trim() === "" || !dueDate) return; // Ensure a task and date are set
 
         const newTask: Todo = {
             id: Date.now(),
             task,
             dueDate,
-            alarmTime,
             audioSrc: audioFile ? URL.createObjectURL(audioFile) : undefined
         };
         setTodos([...todos, newTask]);
         setTask("");
         setDueDate(null);
-        setAlarmHours(""); // Reset to empty
-        setAlarmMinutes(""); // Reset to empty
         setAudioFile(null); // Reset audio file
 
-        if (dueDate) {
-            const alarmDate = new Date(dueDate);
-            alarmDate.setHours(alarmTime.hours);
-            alarmDate.setMinutes(alarmTime.minutes);
-
-            const timeToReminder = alarmDate.getTime() - new Date().getTime();
-            if (timeToReminder > 0) {
-                setTimeout(() => {
-                    showNotification(newTask.task, newTask.audioSrc);
-                }, timeToReminder);
-            }
+        // Set notification for the due date and time
+        const alarmDate = new Date(dueDate);
+        const timeToReminder = alarmDate.getTime() - new Date().getTime();
+        if (timeToReminder > 0) {
+            setTimeout(() => {
+                showNotification(newTask.task, newTask.audioSrc);
+            }, timeToReminder);
         }
     };
 
@@ -105,32 +89,14 @@ const TodoApp = () => {
                     onChange={(e) => setTask(e.target.value)}
                     placeholder="Enter a task"
                 />
-                <DatePicker
-                    selected={dueDate}
-                    onChange={(date) => setDueDate(date)}
-                    dateFormat="P" // Format changed to only show the date
-                    placeholderText="Set due date"
-                />
                 <div>
-                    <label htmlFor="alarm-hours">Set Time: </label>
-                    <input
-                        type="number"
-                        id="alarm-hours"
-                        value={alarmHours}
-                        onChange={(e) => setAlarmHours(e.target.value)}
-                        min="0"
-                        max="23"
-                        placeholder="HH"
-                    />
-                    <span>:</span>
-                    <input
-                        type="number"
-                        id="alarm-minutes"
-                        value={alarmMinutes}
-                        onChange={(e) => setAlarmMinutes(e.target.value)}
-                        min="0"
-                        max="59"
-                        placeholder="MM"
+                    <label htmlFor="date-time">Set Due Date and Time: </label>
+                    <DatePicker
+                        selected={dueDate}
+                        onChange={(date) => setDueDate(date)}
+                        showTimeSelect
+                        dateFormat="Pp" // Show both date and time
+                        placeholderText="Set due date and time"
                     />
                 </div>
                 <div>
@@ -148,7 +114,7 @@ const TodoApp = () => {
                 </div>
                 <button
                     onClick={addTask}
-                    disabled={!task || (!alarmHours && !alarmMinutes)} // Ensure time is set
+                    disabled={!task || !dueDate} // Ensure a task and date are set
                     className={task ? "active" : ""}
                 >
                     Add Task
@@ -159,7 +125,7 @@ const TodoApp = () => {
                 {todos.map((todo) => (
                     <li key={todo.id}>
                         {todo.task} 
-                        {todo.dueDate ? new Date(todo.dueDate).toLocaleDateString() : ""} {/* Display only the date */}
+                        {todo.dueDate ? new Date(todo.dueDate).toLocaleString() : ""} {/* Display date and time */}
                         <button onClick={() => deleteTask(todo.id)}>Delete</button>
                     </li>
                 ))}

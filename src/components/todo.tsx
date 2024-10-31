@@ -69,7 +69,6 @@ const TodoApp = () => {
             });
 
             notification.onclick = () => {
-                // Optionally handle notification click
                 console.log("Notification clicked!");
             };
 
@@ -88,6 +87,10 @@ const TodoApp = () => {
                 console.error("Error playing sound:", error);
             });
         }
+    };
+
+    const deleteTask = (id: number) => {
+        setTodos(todos.filter(todo => todo.id !== id)); // Filter out the task to be deleted
     };
 
     return (
@@ -123,6 +126,7 @@ const TodoApp = () => {
                 {todos.map((todo) => (
                     <li key={todo.id}>
                         {todo.task} - {todo.dueDate?.toLocaleString()}
+                        <button onClick={() => deleteTask(todo.id)}>Delete</button>
                     </li>
                 ))}
             </ul>
